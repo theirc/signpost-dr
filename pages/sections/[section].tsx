@@ -42,6 +42,8 @@ import {
   populateSectionStrings,
 } from '../../lib/translations';
 import { getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
+  
+import{
   getArticle,
   getArticlesForSection,
   getCategoriesWithSections,
@@ -54,7 +56,7 @@ import { getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
   getSection,
   getSections,
   getTranslationsFromDynamicContent,
-}
+}from @ircsignpost/signpost-base/dist/src/zendesk
 
 interface CategoryProps {
   currentLocale: Locale;
