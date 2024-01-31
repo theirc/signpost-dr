@@ -63,7 +63,17 @@ import {
   populateServicePageStrings,
 } from '../../lib/translations';
 import { getSiteUrl, getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
-import { getArticle } from '../../lib/zendesk-fake';
+  
+import{
+  CategoryWithSections,
+  ZendeskCategory,
+  getArticlesForSection,
+  getCategoriesWithSections,
+  getTranslationsFromDynamicContent,
+  getArticle,
+  getSection,
+  getSections,
+}from '@ircsignpost/signpost-base/dist/src/zendesk';
 
 interface ServiceProps {
   pageTitle: string;
