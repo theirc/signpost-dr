@@ -48,9 +48,10 @@ export const CATEGORIES_TO_HIDE: number[] = [
 // A map from a locale code to Zendesk locale id used for dynamic content translations.
 // https://developer.zendesk.com/api-reference/ticketing/account-configuration/locales/
 // Keep in sync with locales configured in /next.config.js.
+//https://signpost-global.zendesk.com/api/v2/locales
 export const DYNAMIC_CONTENT_LOCALES: { [key: string]: number } = {
-  'en-us': 1, // English locale id
-  fr: 16,
+  es: 2,
+  ht: 1635,
 };
 
 export const ZENDESK_AUTH_HEADER = {
