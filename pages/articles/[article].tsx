@@ -36,7 +36,7 @@ import {
   REVALIDATION_TIMEOUT_SECONDS,
   SEARCH_BAR_INDEX,
   SECTION_ICON_NAMES,
-	@@ -42,7 +35,6 @@ import {
+import {
 } from '../../lib/constants';
 import {
   LOCALES,
@@ -44,7 +44,7 @@ import {
   Locale,
   getLocaleFromCode,
   getZendeskLocaleId,
-	@@ -51,266 +43,232 @@ import { getHeaderLogoProps } from '../../lib/logo';
+import { getHeaderLogoProps } from '../../lib/logo';
 import { getFooterItems, getMenuItems } from '../../lib/menu';
 import {
   COMMON_DYNAMIC_CONTENT_PLACEHOLDERS,
