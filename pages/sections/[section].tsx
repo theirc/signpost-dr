@@ -51,7 +51,7 @@ import{
   getCategoriesWithSections,
   getSection,
   getSections,
-  getTranslationsFromDynamicContent
+  getTranslationsFromDynamicContent,
   getArticle,
   getArticlesForSection,
   getCategoriesWithSections,
