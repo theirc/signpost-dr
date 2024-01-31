@@ -49,14 +49,17 @@ import {
   populateMenuOverlayStrings,
 } from '../../lib/translations';
 import { getSiteUrl, getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
-// TODO Use real Zendesk API implemetation.
-import {
-  getArticle,
-  getArticles,
-  getCategories,
+  
+import{
+  CategoryWithSections,
+  ZendeskCategory,
+  getArticlesForSection,
   getCategoriesWithSections,
   getTranslationsFromDynamicContent,
-} from '../../lib/zendesk-fake';
+  getArticle,
+  getSection,
+  getSections,
+}from '@ircsignpost/signpost-base/dist/src/zendesk';
 
 interface ArticleProps {
   pageTitle: string;
