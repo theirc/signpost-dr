@@ -51,8 +51,6 @@ import {
 import { getSiteUrl, getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
   
 import{
-  CategoryWithSections,
-  ZendeskCategory,
   getArticlesForSection,
   getCategoriesWithSections,
   getTranslationsFromDynamicContent,
