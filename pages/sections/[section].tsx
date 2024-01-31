@@ -52,7 +52,6 @@ import{
   getArticle,
   getSection,
   getSections,
-  getTranslationsFromDynamicContent,
 }from '@ircsignpost/signpost-base/dist/src/zendesk';
 
 interface CategoryProps {
