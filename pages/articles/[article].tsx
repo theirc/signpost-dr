@@ -53,7 +53,7 @@ import { getSiteUrl, getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
 import{
   getArticlesForSection,
   getCategoriesWithSections,
-  getCategorries,
+  getCategories,
   getTranslationsFromDynamicContent,
   getArticle,
   getArticles,
