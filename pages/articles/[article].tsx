@@ -51,15 +51,11 @@ import {
 import { getSiteUrl, getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
   
 import{
-  getArticlesForSection,
-  getCategoriesWithSections,
-  getCategorySection,
-  getCategories,
-  getTranslationsFromDynamicContent,
   getArticle,
   getArticles,
-  getSection,
-  getSections,
+  getCategories,
+  getCategoriesWithSections,
+  getTranslationsFromDynamicContent,
 }from '@ircsignpost/signpost-base/dist/src/zendesk';
 
 interface ArticleProps {
