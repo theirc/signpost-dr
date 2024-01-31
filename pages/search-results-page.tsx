@@ -39,15 +39,17 @@ import {
   populateMenuOverlayStrings,
   populateSearchResultsPageStrings,
 } from '../lib/translations';
-import { getSiteUrl, getZendeskMappedUrl, getZendeskUrl } from '../lib/url';
-// TODO: import methods from '@ircsignpost/signpost-base/dist/src/zendesk' instead.
-import {
-  getArticle,
-  getCategories,
+  
+import{
+  CategoryWithSections,
+  ZendeskCategory,
+  getArticlesForSection,
   getCategoriesWithSections,
   getTranslationsFromDynamicContent,
-} from '../lib/zendesk-fake';
-
+  getArticle,
+  getSection,
+  getSections,
+}from '@ircsignpost/signpost-base/dist/src/zendesk';
 interface SearchResultsPageProps {
   currentLocale: Locale;
   strings: SearchResultsPageStrings;
