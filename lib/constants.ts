@@ -46,7 +46,7 @@ export const CATEGORIES_TO_HIDE: number[] = [
 ];
 
 // A list of category IDs that the site should not display.
-export const MENU_TO_HIDE: number[] = [
+export const MENU_CATEGORIES_TO_HIDE: number[] = [
   /* TODO */
 ];
 
