@@ -49,14 +49,14 @@ import {
   populateMenuOverlayStrings,
 } from '../../lib/translations';
 import { getSiteUrl, getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
-  
-import{
+import {
   getArticle,
   getArticles,
   getCategories,
   getCategoriesWithSections,
   getTranslationsFromDynamicContent,
-}from '@ircsignpost/signpost-base/dist/src/zendesk';
+} from from '@ircsignpost/signpost-base/dist/src/zendesk';
+
 
 interface ArticleProps {
   pageTitle: string;
