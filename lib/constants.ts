@@ -45,6 +45,11 @@ export const CATEGORIES_TO_HIDE: number[] = [
   /* TODO */
 ];
 
+// A list of category IDs that the site should not display.
+export const MENU_TO_HIDE: number[] = [
+  /* TODO */
+];
+
 // A map from a locale code to Zendesk locale id used for dynamic content translations.
 // https://developer.zendesk.com/api-reference/ticketing/account-configuration/locales/
 // Keep in sync with locales configured in /next.config.js.
