@@ -44,7 +44,7 @@ module.exports =  withLess({
       lessOptions: {
         modifyVars: {//
           'primary-color': '#38447c',
-          'secondary-color': '#ffffff',
+          'secondary-color': '#38447c',
           'accent-color': '#fce464',
           'info-color': '@accent-color',
           'alert-info-bg-color': '@accent-color',
