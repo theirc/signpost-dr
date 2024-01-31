@@ -39,16 +39,17 @@ import {
   populateFilterSelectStrings,
   populateMenuOverlayStrings,
 } from '../../lib/translations';
-import { getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
-// TODO Use real Zendesk API implementation.
-import {
-  getArticle,
+  
+import{
+  CategoryWithSections,
+  ZendeskCategory,
   getArticlesForSection,
-  getCategories,
-  getCategorySection,
-  getSectionsForCategory,
+  getCategoriesWithSections,
   getTranslationsFromDynamicContent,
-} from '../../lib/zendesk-fake';
+  getArticle,
+  getSection,
+  getSections,
+}from '@ircsignpost/signpost-base/dist/src/zendesk';
 
 interface CategoryProps {
   currentLocale: Locale;
