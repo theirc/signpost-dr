@@ -1,147 +1,176 @@
+import { extractMetaTags } from '@ircsignpost/signpost-base/dist/src/article-content';
+import {
+  ArticlePageStrings,
+  getErrorResponseProps,
+} from '@ircsignpost/signpost-base/dist/src/article-page';
+import ArticlePage, {
+  MountArticle,
+} from '@ircsignpost/signpost-base/dist/src/article-page';
 import CookieBanner from '@ircsignpost/signpost-base/dist/src/cookie-banner';
+import Footer from '@ircsignpost/signpost-base/dist/src/footer';
 import { MenuOverlayItem } from '@ircsignpost/signpost-base/dist/src/menu-overlay';
-import SectionPage, {
-  SectionStrings,
-} from '@ircsignpost/signpost-base/dist/src/section-page';
-import { getSectionRedirectServerSideProps } from '@ircsignpost/signpost-base/dist/src/section-page';
-import { MenuItem } from '@ircsignpost/signpost-base/dist/src/select-menu';
+import { createDefaultSearchBarProps } from '@ircsignpost/signpost-base/dist/src/search-bar';
 import {
-  Article,
-  Section,
-} from '@ircsignpost/signpost-base/dist/src/topic-with-articles';
-import {
-  getArticlesForSection,
+  CategoryWithSections,
+  ZendeskCategory,
   getCategoriesWithSections,
-  getSection,
-  getSections,
+} from '@ircsignpost/signpost-base/dist/src/zendesk';
+import {
+  getArticle,
+  getArticles,
+  getCategories,
   getTranslationsFromDynamicContent,
 } from '@ircsignpost/signpost-base/dist/src/zendesk';
 import { GetStaticProps } from 'next';
 import getConfig from 'next/config';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import React from 'react';
 
 import { useBreadcrumbs } from '../../context/BreadcrumbsContext';
 import {
-  CATEGORIES_TO_HIDE,
-  GOOGLE_ANALYTICS_IDS,
   MENU_CATEGORIES_TO_HIDE,
+  ABOUT_US_ARTICLE_ID,
+  CATEGORIES_TO_HIDE,
+  CATEGORY_ICON_NAMES,
+  GOOGLE_ANALYTICS_IDS,
   REVALIDATION_TIMEOUT_SECONDS,
   SEARCH_BAR_INDEX,
   SECTION_ICON_NAMES,
-  SITE_TITLE,
-  USE_CAT_SEC_ART_CONTENT_STRUCTURE,
-  ZENDESK_AUTH_HEADER,
+	@@ -42,7 +35,6 @@ import {
 } from '../../lib/constants';
 import {
   LOCALES,
+  LOCALE_CODES_TO_CANONICAL_LOCALE_CODES,
   Locale,
   getLocaleFromCode,
   getZendeskLocaleId,
-} from '../../lib/locale';
-import { getHeaderLogoProps } from '../../lib/logo';
+	@@ -51,266 +43,232 @@ import { getHeaderLogoProps } from '../../lib/logo';
 import { getFooterItems, getMenuItems } from '../../lib/menu';
 import {
   COMMON_DYNAMIC_CONTENT_PLACEHOLDERS,
-  SECTION_PLACEHOLDERS,
-  getLastUpdatedLabel,
-  populateFilterSelectStrings,
+  ERROR_DYNAMIC_CONTENT_PLACEHOLDERS,
+  generateArticleErrorProps,
+  populateArticlePageStrings,
   populateMenuOverlayStrings,
-  populateSectionStrings,
 } from '../../lib/translations';
-import { getZendeskUrl } from '../../lib/url';
+import { getSiteUrl, getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
 
-interface CategoryProps {
-  currentLocale: Locale;
+interface ArticleProps {
   pageTitle: string;
-  sectionId: number;
-  sectionItems: MenuItem[];
-  section: Section;
+  articleTitle: string;
+  articleContent: string;
+  metaTagAttributes: object[];
+  siteUrl: string;
+  articleId: number;
+  lastEditedValue: string;
+  locale: Locale;
+  pageUnderConstruction?: boolean;
+  preview: boolean;
+  strings: ArticlePageStrings;
   // A list of |MenuOverlayItem|s to be displayed in the header and side menu.
   menuOverlayItems: MenuOverlayItem[];
-  strings: SectionStrings;
   footerLinks?: MenuOverlayItem[];
 }
 
-export default function Category({
-  currentLocale,
+export default function Article({
   pageTitle,
-  sectionId,
-  sectionItems,
-  section,
-  menuOverlayItems,
+  articleTitle,
+  articleId,
+  articleContent,
+  metaTagAttributes,
+  siteUrl,
+  lastEditedValue,
+  locale,
+  pageUnderConstruction,
+  preview,
   strings,
+  menuOverlayItems,
   footerLinks,
-}: CategoryProps) {
-  const [sectionDisplayed, setSectionDisplayed] = useState<Section>(section);
-  const { publicRuntimeConfig } = getConfig();
+}: ArticleProps) {
   const router = useRouter();
-  const { setBreadcrumbs } = useBreadcrumbs();
-
-  useEffect(() => {
-    const url = router.asPath;
-    const test = { url, title: section.name };
-    setBreadcrumbs(test);
-  }, [router.asPath, setBreadcrumbs, section.name]);
-
-  useEffect(() => {
-    setSectionDisplayed(section);
-  }, [section]);
+  const { publicRuntimeConfig } = getConfig();
+  const { breadcrumbs } = useBreadcrumbs();
 
   return (
-    <SectionPage
-      currentLocale={currentLocale}
-      locales={LOCALES}
+    <ArticlePage
       pageTitle={pageTitle}
-      sectionId={sectionId}
-      sectionItems={sectionItems}
-      section={sectionDisplayed}
-      menuOverlayItems={menuOverlayItems}
-      headerLogoProps={getHeaderLogoProps(currentLocale)}
-      searchBarIndex={SEARCH_BAR_INDEX}
-      cookieBanner={
-        <CookieBanner
-          strings={strings.cookieBannerStrings}
-          googleAnalyticsIds={GOOGLE_ANALYTICS_IDS}
-        />
-      }
-      strings={strings}
-      footerLinks={footerLinks}
-      signpostVersion={publicRuntimeConfig?.version}
-    />
+      articleId={articleId}
+      canonicalLocales={LOCALE_CODES_TO_CANONICAL_LOCALE_CODES}
+      pageUnderConstruction={pageUnderConstruction}
+      siteUrl={siteUrl}
+      preview={preview}
+      errorProps={strings.articleErrorStrings}
+      metaTagAttributes={metaTagAttributes}
+      layoutWithMenuProps={{
+        headerProps: {
+          currentLocale: locale,
+          locales: LOCALES,
+          logoProps: getHeaderLogoProps(locale),
+          searchBarProps: createDefaultSearchBarProps(
+            strings.searchBarStrings,
+            SEARCH_BAR_INDEX,
+            locale,
+            router
+          ),
+        },
+        menuOverlayItems: menuOverlayItems,
+        cookieBanner: (
+          <CookieBanner
+            strings={strings.cookieBannerStrings}
+            googleAnalyticsIds={GOOGLE_ANALYTICS_IDS}
+          />
+        ),
+        footerComponent: (
+          <Footer
+            currentLocale={locale}
+            locales={LOCALES}
+            strings={strings.footerStrings}
+            links={footerLinks}
+            signpostVersion={publicRuntimeConfig?.version}
+          />
+        ),
+        layoutDirection: locale.direction,
+        children: [],
+      }}
+    >
+      <MountArticle
+        articleProps={{
+          title: articleTitle,
+          content: articleContent,
+          lastEdit: {
+            label: strings.lastUpdatedLabel,
+            value: lastEditedValue,
+            locale: locale,
+          },
+          strings: strings.articleContentStrings,
+          previosURL: breadcrumbs,
+        }}
+      />
+    </ArticlePage>
   );
 }
 
 async function getStaticParams() {
-  const sections = await Promise.all(
+  const articles = await Promise.all(
     Object.values(LOCALES).map(
-      async (locale) => await getSections(locale, getZendeskUrl())
+      async (locale) => await getArticles(locale, getZendeskUrl())
     )
   );
 
-  return sections.flat().map((section) => {
+  return articles.flat().map((article) => {
     return {
-      section: section.id.toString(),
-      locale: section.locale,
+      article: article.id.toString(),
+      locale: article.locale,
     };
   });
 }
-
 export async function getStaticPaths() {
-  if (!USE_CAT_SEC_ART_CONTENT_STRUCTURE) {
-    // Section page is not statically prerendered in this type of content structure.
-    return {
-      paths: [],
-      fallback: 'blocking',
-    };
-  }
-
-  const sectionParams = await getStaticParams();
+  const articleParams = await getStaticParams();
 
   return {
-    paths: sectionParams.map(({ section, locale }) => {
+    paths: articleParams.map(({ article, locale }) => {
       return {
-        params: { section },
+        params: { article },
         locale,
       };
     }),
@@ -149,128 +178,35 @@ export async function getStaticPaths() {
   };
 }
 
-function getStringPath(section: string, locale: string): string {
-  return `/${locale}/sections/${section}`;
+function getStringPath(article: string, locale: string): string {
+  return `/${locale}/articles/${article}`;
 }
 
 export async function getStringPaths(): Promise<string[]> {
-  if (!USE_CAT_SEC_ART_CONTENT_STRUCTURE) {
-    // Section page does not exist in this type of content structure.
-    return [];
-  }
   const params = await getStaticParams();
-  return params.map((param) => getStringPath(param.section, param.locale));
+  return params.map((param) => getStringPath(param.article, param.locale));
 }
 
-export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
-  if (!locale) {
-    throw new Error(
-      `Failed to get static props for a section (id: ${params?.section}): missing locale.`
-    );
-  }
-
-  if (!params?.section) return { notFound: true };
-
-  const currentLocale = getLocaleFromCode(locale);
-
-  if (!USE_CAT_SEC_ART_CONTENT_STRUCTURE) {
-    // For this type of structure section page redirects to the corresponding category page.
-    return getSectionRedirectServerSideProps(
-      currentLocale,
-      Number(params.section),
-      getZendeskUrl()
-    );
-  }
-
-  const zendeskSection = await getSection(
-    currentLocale,
-    Number(params.section),
-    getZendeskUrl()
-  );
-  if (!zendeskSection) return { notFound: true };
-
-  const dynamicContent = await getTranslationsFromDynamicContent(
+export const getStaticProps: GetStaticProps = async ({
+  params,
+  locale,
+  preview,
+}) => {
+  const currentLocale = getLocaleFromCode(locale ?? '');
+  let dynamicContent = await getTranslationsFromDynamicContent(
     getZendeskLocaleId(currentLocale),
-    COMMON_DYNAMIC_CONTENT_PLACEHOLDERS.concat(SECTION_PLACEHOLDERS),
+    [
+      ...COMMON_DYNAMIC_CONTENT_PLACEHOLDERS,
+      ...ERROR_DYNAMIC_CONTENT_PLACEHOLDERS,
+    ],
     getZendeskUrl(),
     ZENDESK_AUTH_HEADER
   );
-  const strings: SectionStrings = populateSectionStrings(dynamicContent);
 
-  const articles: Article[] = (
-    await getArticlesForSection(
+  let categories: ZendeskCategory[] | CategoryWithSections[];
+  let menuCategories: ZendeskCategory[] | CategoryWithSections[];
+  if (USE_CAT_SEC_ART_CONTENT_STRUCTURE) {
+    categories = await getCategoriesWithSections(
       currentLocale,
-      Number(params?.section),
-      getZendeskUrl()
-    )
-  ).map((article) => {
-    return {
-      id: article.id,
-      title: article.title,
-      lastEdit: {
-        label: getLastUpdatedLabel(dynamicContent),
-        value: article.edited_at,
-        locale: currentLocale,
-      },
-    };
-  });
-
-  const section: Section = {
-    id: zendeskSection.id,
-    name: zendeskSection.name,
-    description: zendeskSection.description,
-    articles,
-  };
-
-  const categories = await getCategoriesWithSections(
-    currentLocale,
-    getZendeskUrl(),
-    (c) => !CATEGORIES_TO_HIDE.includes(c.id)
-  );
-  categories.forEach(({ sections }) => {
-    sections.forEach(
-      (s) => (s.icon = SECTION_ICON_NAMES[s.id] || 'help_outline')
-    );
-  });
-
-  const menuCategories = await getCategoriesWithSections(
-    currentLocale,
-    getZendeskUrl(),
-    (c) => !MENU_CATEGORIES_TO_HIDE.includes(c.id)
-  );
-
-  const sectionItems = categories
-    .flatMap((c) => c.sections)
-    .map((section) => {
-      return {
-        name: section.name,
-        value: section.id,
-        iconName: section.icon,
-        link: '/sections/' + section.id.toString(),
-      };
-    });
-
-  const menuOverlayItems = getMenuItems(
-    populateMenuOverlayStrings(dynamicContent),
-    menuCategories
-  );
-
-  const footerLinks = getFooterItems(
-    populateMenuOverlayStrings(dynamicContent),
-    menuCategories
-  );
-
-  return {
-    props: {
-      currentLocale,
-      pageTitle: SITE_TITLE,
-      sectionId: Number(params.section),
-      sectionItems,
-      section,
-      menuOverlayItems,
-      strings,
-      footerLinks,
-    },
-    revalidate: REVALIDATION_TIMEOUT_SECONDS,
-  };
-};
+      getZendeskUrl(),
+      (c) => !CATEGORIES_TO_HIDE.includes(c.id)
