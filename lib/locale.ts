@@ -7,7 +7,7 @@ export { Locale };
 
 // Keep LOCALES and 'getLocaleFromCode' in sync with locales configured in /next.config.js.
 export const LOCALES: { [key: string]: Locale } = {
-  fr-HT: {
+  'fr-HT': {
     url: 'fr-HT',
     direction: 'ltr',
     name: 'Kreyòl',
