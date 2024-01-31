@@ -160,17 +160,13 @@ async function getStaticParams() {
     )
   );
 
-  return articles
-    .flat()
-    .filter((x) => x?.author_id !== 423757401494)
-    .map((article) => {
-      return {
-        article: article.id.toString(),
-        locale: article.locale,
-      };
-    });
+  return articles.flat().map((article) => {
+    return {
+      article: article.id.toString(),
+      locale: article.locale,
+    };
+  });
 }
-
 export async function getStaticPaths() {
   const articleParams = await getStaticParams();
 
