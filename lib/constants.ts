@@ -50,8 +50,8 @@ export const CATEGORIES_TO_HIDE: number[] = [
 // Keep in sync with locales configured in /next.config.js.
 //https://signpost-global.zendesk.com/api/v2/locales
 export const DYNAMIC_CONTENT_LOCALES: { [key: string]: number } = {
-  es: 2,
-  fr-HT: 1635,
+  'es': 2,
+  'fr-HT': 1635,
 };
 
 export const ZENDESK_AUTH_HEADER = {
