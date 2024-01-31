@@ -28,6 +28,7 @@ import React from 'react';
 
 import { useBreadcrumbs } from '../../context/BreadcrumbsContext';
 import {
+  MENU_CATEGORIES_TO_HIDE,
   ABOUT_US_ARTICLE_ID,
   CATEGORIES_TO_HIDE,
   CATEGORY_ICON_NAMES,
