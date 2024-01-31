@@ -50,11 +50,14 @@ import {
 } from '../../lib/translations';
 import { getSiteUrl, getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
 import {
+  CategoryWithSections,
+  ZendeskCategory,
+  getCategoriesWithSections,
+} from '@ircsignpost/signpost-base/dist/src/zendesk';
+import {
   getArticle,
-  getArticlesForSection,
+  getArticles,
   getCategories,
-  getCategorySection,
-  getSectionsForCategory,
   getTranslationsFromDynamicContent,
 } from '@ircsignpost/signpost-base/dist/src/zendesk';
 
