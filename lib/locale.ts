@@ -18,8 +18,8 @@ export const LOCALES: { [key: string]: Locale } = {
 
 export const LOCALE_CODES_TO_CANONICAL_LOCALE_CODES: { [key: string]: string } =
   {
-    fr-HT: 'fr-HT',
-    es: 'es',
+    'fr-HT': 'fr-HT',
+    'es': 'es',
   };
 
 // Returns the effective locale given locale code.
