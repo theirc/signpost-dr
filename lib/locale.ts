@@ -13,7 +13,7 @@ export const LOCALES: { [key: string]: Locale } = {
     name: 'Kreyòl',
     directus: 'ht',
   },
-  es: { url: 'es', direction: 'ltr', name: 'Español', directus: 'es' },
+  es: { url: 'es', direction: 'ltr', name: 'Español', directus: 'es-ES' },
 };
 
 export const LOCALE_CODES_TO_CANONICAL_LOCALE_CODES: { [key: string]: string } =
