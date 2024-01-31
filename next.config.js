@@ -6,8 +6,8 @@ const nextConfig = {
   swcMinify: false,
   // Keep in sync with locales configured in /lib/locale.ts.
   i18n: {
-    locales: ['default', 'ht', 'es'],
-    defaultLocale: 'ht',
+    locales: ['default', 'fr-HT', 'es'],
+    defaultLocale: 'fr-HT',
     localeDetection: false,
   },
   async redirects() {
