@@ -51,7 +51,7 @@ export const CATEGORIES_TO_HIDE: number[] = [
 //https://signpost-global.zendesk.com/api/v2/locales
 export const DYNAMIC_CONTENT_LOCALES: { [key: string]: number } = {
   es: 2,
-  ht: 1635,
+  fr-HT: 1635,
 };
 
 export const ZENDESK_AUTH_HEADER = {
