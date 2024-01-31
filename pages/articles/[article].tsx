@@ -28,15 +28,17 @@ import React from 'react';
 
 import { useBreadcrumbs } from '../../context/BreadcrumbsContext';
 import {
-  MENU_CATEGORIES_TO_HIDE,
   ABOUT_US_ARTICLE_ID,
   CATEGORIES_TO_HIDE,
   CATEGORY_ICON_NAMES,
   GOOGLE_ANALYTICS_IDS,
+  MENU_CATEGORIES_TO_HIDE,
   REVALIDATION_TIMEOUT_SECONDS,
   SEARCH_BAR_INDEX,
   SECTION_ICON_NAMES,
-import {
+  SITE_TITLE,
+  USE_CAT_SEC_ART_CONTENT_STRUCTURE,
+  ZENDESK_AUTH_HEADER,
 } from '../../lib/constants';
 import {
   LOCALES,
@@ -44,6 +46,7 @@ import {
   Locale,
   getLocaleFromCode,
   getZendeskLocaleId,
+} from '../../lib/locale';
 import { getHeaderLogoProps } from '../../lib/logo';
 import { getFooterItems, getMenuItems } from '../../lib/menu';
 import {
@@ -210,3 +213,106 @@ export const getStaticProps: GetStaticProps = async ({
       currentLocale,
       getZendeskUrl(),
       (c) => !CATEGORIES_TO_HIDE.includes(c.id)
+    );
+    categories.forEach(({ sections }) => {
+      sections.forEach(
+        (s) => (s.icon = SECTION_ICON_NAMES[s.id] || 'help_outline')
+      );
+    });
+    menuCategories = await getCategoriesWithSections(
+      currentLocale,
+      getZendeskUrl(),
+      (c) => !MENU_CATEGORIES_TO_HIDE.includes(c.id)
+    );
+  } else {
+    categories = await getCategories(currentLocale, getZendeskUrl());
+    categories = categories.filter((c) => !CATEGORIES_TO_HIDE.includes(c.id));
+    categories.forEach(
+      (c) => (c.icon = CATEGORY_ICON_NAMES[c.id] || 'help_outline')
+    );
+    menuCategories = await getCategories(currentLocale, getZendeskUrl());
+    menuCategories = menuCategories.filter(
+      (c) => !MENU_CATEGORIES_TO_HIDE.includes(c.id)
+    );
+  }
+
+  const menuOverlayItems = getMenuItems(
+    populateMenuOverlayStrings(dynamicContent),
+    menuCategories,
+    false
+  );
+
+  const footerLinks = getFooterItems(
+    populateMenuOverlayStrings(dynamicContent),
+    menuCategories
+  );
+
+  const strings = populateArticlePageStrings(dynamicContent);
+
+  const article = await getArticle(
+    currentLocale,
+    Number(params?.article),
+    getZendeskUrl(),
+    getZendeskMappedUrl(),
+    ZENDESK_AUTH_HEADER,
+    preview ?? false
+  );
+
+  // If article does not exist, return an error.
+  if (!article) {
+    const errorProps = await getErrorResponseProps(
+      Number(params?.article),
+      currentLocale,
+      preview ?? false,
+      LOCALES,
+      {
+        url: getZendeskUrl(),
+        mappedUrl: getZendeskMappedUrl(),
+        authHeader: ZENDESK_AUTH_HEADER,
+      }
+    );
+
+    const subtitle = generateArticleErrorProps(dynamicContent).subtitle ?? '';
+    return errorProps.notFound
+      ? // When the error is notFound, router automatically redirects
+        // to 404 page which has its own logic for fetching props.
+        errorProps
+      : // For other error types we have custom error handling logic inside
+        // ArticlePage component, so we pass ArticlePage's and error props.
+        {
+          props: {
+            ...errorProps,
+            pageTitle: `${subtitle} - ${SITE_TITLE}`,
+            strings,
+            menuOverlayItems,
+            siteUrl: getSiteUrl(),
+            articleId: Number(params?.article),
+            locale: currentLocale,
+            preview: preview ?? false,
+            metaTagAttributes: [],
+          },
+        };
+  }
+
+  const [metaTagAttributes, content] = article.body
+    ? extractMetaTags(article.body)
+    : [[], article.body];
+
+  return {
+    props: {
+      pageTitle: `${article.title} - ${SITE_TITLE}`,
+      articleTitle: article.title,
+      articleId: article.id,
+      articleContent: content,
+      metaTagAttributes,
+      siteUrl: getSiteUrl(),
+      lastEditedValue: article.edited_at,
+      locale: currentLocale,
+      preview: preview ?? false,
+      strings,
+      menuOverlayItems,
+      footerLinks,
+    },
+    revalidate: REVALIDATION_TIMEOUT_SECONDS,
+  };
+};
