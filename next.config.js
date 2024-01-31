@@ -43,9 +43,9 @@ module.exports =  withLess({
     lessLoaderOptions: {
       lessOptions: {
         modifyVars: {//
-          'primary-color': '#38393C',
-          'secondary-color': '#242629',
-          'accent-color': '#FFB500',
+          'primary-color': '#38447c',
+          'secondary-color': '#ffffff',
+          'accent-color': '#fce464',
           'info-color': '@accent-color',
           'alert-info-bg-color': '@accent-color',
           // Override Ant typography.
