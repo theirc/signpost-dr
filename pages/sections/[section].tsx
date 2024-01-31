@@ -42,15 +42,19 @@ import {
   populateSectionStrings,
 } from '../../lib/translations';
 import { getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
-// TODO Use real Zendesk API implementation.
-import {
+  getArticle,
+  getArticlesForSection,
+  getCategoriesWithSections,
+  getSection,
+  getSections,
+  getTranslationsFromDynamicContent,import {
   getArticle,
   getArticlesForSection,
   getCategoriesWithSections,
   getSection,
   getSections,
   getTranslationsFromDynamicContent,
-} from '../../lib/zendesk-fake';
+}
 
 interface CategoryProps {
   currentLocale: Locale;
