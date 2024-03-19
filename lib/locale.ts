@@ -7,8 +7,8 @@ export { Locale };
 
 // Keep LOCALES and 'getLocaleFromCode' in sync with locales configured in /next.config.js.
 export const LOCALES: { [key: string]: Locale } = {
-  'fr-HT': {
-    url: 'fr-HT',
+  'fr-ht': {
+    url: 'fr-ht',
     direction: 'ltr',
     name: 'Kreyòl',
     directus: 'ht',
@@ -18,15 +18,16 @@ export const LOCALES: { [key: string]: Locale } = {
 
 export const LOCALE_CODES_TO_CANONICAL_LOCALE_CODES: { [key: string]: string } =
   {
-    'fr-HT': 'fr-HT',
-    'es': 'es',
+    ht: 'fr-ht',
+    'fr-ht': 'fr-ht',
+    es: 'es',
   };
 
 // Returns the effective locale given locale code.
 //
 // This function defaults to en-us in case we end up in a situation where the locale is not recognized. It's defensive programming as this shouldn't happen.
 export function getLocaleFromCode(code: string): Locale {
-  return LOCALES[code] ?? LOCALES['fr-HT'];
+  return LOCALES[code] ?? LOCALES['fr-ht'];
 }
 
 /* Returns a Zendesk locale id for the current locale.

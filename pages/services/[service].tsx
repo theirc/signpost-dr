@@ -28,7 +28,6 @@ import { useRouter } from 'next/router';
 import React from 'react';
 
 import {
-  ABOUT_US_ARTICLE_ID,
   ALGOLIA_ARTICLE_INDEX_NAME,
   ALGOLIA_QUERY_INDEX_NAME,
   ALGOLIA_SEARCH_API_KEY_WRITE,
@@ -63,17 +62,6 @@ import {
   populateServicePageStrings,
 } from '../../lib/translations';
 import { getSiteUrl, getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
-  
-import{
-  CategoryWithSections,
-  ZendeskCategory,
-  getArticlesForSection,
-  getCategoriesWithSections,
-  getTranslationsFromDynamicContent,
-  getArticle,
-  getSection,
-  getSections,
-}from '@ircsignpost/signpost-base/dist/src/zendesk';
 
 interface ServiceProps {
   pageTitle: string;
@@ -252,17 +240,10 @@ export const getStaticProps: GetStaticProps = async ({
       (c) => (c.icon = CATEGORY_ICON_NAMES[c.id] || 'help_outline')
     );
   }
-  const aboutUsArticle = await getArticle(
-    currentLocale,
-    ABOUT_US_ARTICLE_ID,
-    getZendeskUrl(),
-    getZendeskMappedUrl(),
-    ZENDESK_AUTH_HEADER
-  );
+
   const menuOverlayItems = getMenuItems(
     populateMenuOverlayStrings(dynamicContent),
-    categories,
-    !!aboutUsArticle
+    categories
   );
 
   const strings = populateServicePageStrings(dynamicContent);

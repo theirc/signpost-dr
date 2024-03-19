@@ -1,10 +1,13 @@
 import { Directus } from '@directus/sdk';
 import CookieBanner from '@ircsignpost/signpost-base/dist/src/cookie-banner';
 import {
+  DirectusServiceCategory,
   getDirectusAccessibility,
   getDirectusArticles,
+  getDirectusCities,
   getDirectusPopulationsServed,
   getDirectusProviders,
+  getDirectusRegions,
   getDirectusServiceCategories,
 } from '@ircsignpost/signpost-base/dist/src/directus';
 import { HeaderBannerStrings } from '@ircsignpost/signpost-base/dist/src/header-banner';
@@ -16,8 +19,13 @@ import { ServiceMapProps } from '@ircsignpost/signpost-base/dist/src/service-map
 import {
   CategoryWithSections,
   ZendeskCategory,
+  getCategoriesWithSections,
 } from '@ircsignpost/signpost-base/dist/src/zendesk';
-import type { NextPage } from 'next';
+import {
+  getArticle,
+  getCategories,
+  getTranslationsFromDynamicContent,
+} from '@ircsignpost/signpost-base/dist/src/zendesk';
 import { GetStaticProps } from 'next';
 import getConfig from 'next/config';
 
@@ -25,12 +33,11 @@ import {
   ABOUT_US_ARTICLE_ID,
   CATEGORIES_TO_HIDE,
   CATEGORY_ICON_NAMES,
-  COUNTRY_ID,
   DIRECTUS_AUTH_TOKEN,
   DIRECTUS_COUNTRY_ID,
   DIRECTUS_INSTANCE,
   GOOGLE_ANALYTICS_IDS,
-  MAP_DEFAULT_COORDS,
+  MENU_CATEGORIES_TO_HIDE,
   REVALIDATION_TIMEOUT_SECONDS,
   SEARCH_BAR_INDEX,
   SECTION_ICON_NAMES,
@@ -56,17 +63,7 @@ import {
   populateMenuOverlayStrings,
   populateSocialMediaLinks,
 } from '../lib/translations';
-  
-import{
-  CategoryWithSections,
-  ZendeskCategory,
-  getArticlesForSection,
-  getCategoriesWithSections,
-  getTranslationsFromDynamicContent,
-  getArticle,
-  getSection,
-  getSections,
-}from '@ircsignpost/signpost-base/dist/src/zendesk';
+import { getZendeskMappedUrl, getZendeskUrl } from '../lib/url';
 
 interface HomeProps {
   currentLocale: Locale;
@@ -82,7 +79,7 @@ interface HomeProps {
   footerLinks?: MenuOverlayItem[];
 }
 
-const Home: NextPage<HomeProps> = ({
+export default function Home({
   currentLocale,
   strings,
   headerBannerStrings,
@@ -92,7 +89,7 @@ const Home: NextPage<HomeProps> = ({
   aboutUsTextHtml,
   categories,
   footerLinks,
-}) => {
+}: HomeProps) {
   const { publicRuntimeConfig } = getConfig();
 
   return (
@@ -121,7 +118,7 @@ const Home: NextPage<HomeProps> = ({
       }
     />
   );
-};
+}
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const currentLocale: Locale = getLocaleFromCode(locale ?? 'en-us');
@@ -135,6 +132,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   );
 
   let categories: ZendeskCategory[] | CategoryWithSections[];
+  let menuCategories: ZendeskCategory[] | CategoryWithSections[];
   if (USE_CAT_SEC_ART_CONTENT_STRUCTURE) {
     categories = await getCategoriesWithSections(
       currentLocale,
@@ -146,33 +144,40 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
         (s) => (s.icon = SECTION_ICON_NAMES[s.id] || 'help_outline')
       );
     });
+    menuCategories = await getCategoriesWithSections(
+      currentLocale,
+      getZendeskUrl(),
+      (c) => !MENU_CATEGORIES_TO_HIDE.includes(c.id)
+    );
   } else {
     categories = await getCategories(currentLocale, getZendeskUrl());
     categories = categories.filter((c) => !CATEGORIES_TO_HIDE.includes(c.id));
     categories.forEach(
       (c) => (c.icon = CATEGORY_ICON_NAMES[c.id] || 'help_outline')
     );
+    menuCategories = await getCategories(currentLocale, getZendeskUrl());
+    menuCategories = menuCategories.filter(
+      (c) => !MENU_CATEGORIES_TO_HIDE.includes(c.id)
+    );
   }
 
-  const aboutUsArticle = await getArticle(
+  const menuOverlayItems = getMenuItems(
+    populateMenuOverlayStrings(dynamicContent),
+    menuCategories
+  );
+  const footerLinks = getFooterItems(
+    populateMenuOverlayStrings(dynamicContent),
+    menuCategories
+  );
+
+  const article = await getArticle(
     currentLocale,
     ABOUT_US_ARTICLE_ID,
     getZendeskUrl(),
     getZendeskMappedUrl(),
     ZENDESK_AUTH_HEADER
   );
-  const aboutUsTextHtml = aboutUsArticle ? aboutUsArticle.body : '';
-
-  const menuOverlayItems = getMenuItems(
-    populateMenuOverlayStrings(dynamicContent),
-    categories,
-    !!aboutUsArticle
-  );
-
-  const footerLinks = getFooterItems(
-    populateMenuOverlayStrings(dynamicContent),
-    categories
-  );
+  const aboutUsTextHtml = article ? article.body : '';
 
   const strings = populateHomePageStrings(dynamicContent);
 
@@ -184,8 +189,28 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
     directus,
     currentLocale.directus
   );
+  const providersArray = await getDirectusProviders(
+    directus,
+    DIRECTUS_COUNTRY_ID
+  );
 
-  services?.sort((a, b) =>
+  const uniqueProvidersIdsSet = new Set(services.flatMap((x) => x.provider.id));
+  const uniqueProvidersIdsArray = Array.from(uniqueProvidersIdsSet);
+
+  const providers = providersArray
+    .filter((x) => uniqueProvidersIdsArray.includes(x.id))
+    .sort((a, b) => a.name?.normalize().localeCompare(b.name?.normalize()));
+
+  const enhancedServices = services.map((service) => {
+    const providerDetails = providers.find(
+      (provider) => provider.id === service.provider.id
+    );
+    return providerDetails
+      ? { ...service, provider: providerDetails }
+      : service;
+  });
+
+  enhancedServices?.sort((a, b) =>
     a.name?.normalize().localeCompare(b.name?.normalize())
   );
 
@@ -205,18 +230,48 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   );
   const uniquePopulationsIdsArray = Array.from(uniquePopulationsIdsSet);
 
-  const uniqueProvidersIdsSet = new Set(services.flatMap((x) => x.provider.id));
-  const uniqueProvidersIdsArray = Array.from(uniqueProvidersIdsSet);
+  const uniqueRegionsIds = new Set(services.map((service) => service.region));
 
-  const serviceTypes = await getDirectusServiceCategories(directus);
-  const providersArray = await getDirectusProviders(
-    directus,
-    DIRECTUS_COUNTRY_ID
+  const uniqueCitiesIds = new Set(services.map((service) => service.city));
+
+  const regions = await getDirectusRegions(
+    Array.from(uniqueRegionsIds).filter((x) => x !== null),
+    directus
+  );
+  const cities = await getDirectusCities(
+    Array.from(uniqueCitiesIds).filter((x) => x !== null),
+    directus
   );
 
-  const providers = providersArray
-    .filter((x) => uniqueProvidersIdsArray.includes(x.id))
-    .sort((a, b) => a.name?.normalize().localeCompare(b.name?.normalize()));
+  const fetchServiceTypes = await getDirectusServiceCategories(directus);
+  const uniqueTypesSet = new Set<number>();
+  services.forEach((service) => {
+    service.categories.forEach((category) => {
+      uniqueTypesSet.add(category.service_categories_id.id);
+    });
+  });
+
+  const usedSubcategoryIds = new Set<number>();
+  services.forEach((service) => {
+    service.subcategories.forEach((subcategory) => {
+      usedSubcategoryIds.add(subcategory.services_subcategories_id);
+    });
+  });
+
+  const serviceTypes = fetchServiceTypes
+    .filter((type) => uniqueTypesSet.has(type.id))
+    .map((category) => {
+      const filteredSubcategories = category.services_subcategories.filter(
+        (subcategory) =>
+          usedSubcategoryIds.has(subcategory?.services_subcategories_id?.id)
+      );
+
+      return {
+        ...category,
+        services_subcategories: filteredSubcategories,
+      } as DirectusServiceCategory;
+    });
+
   const populations = await getDirectusPopulationsServed(
     uniquePopulationsIdsArray,
     directus
@@ -234,15 +289,14 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       headerBannerStrings: populateHeaderBannerStrings(dynamicContent),
       socialMediaLinks: populateSocialMediaLinks(dynamicContent),
       serviceMapProps: {
-        services,
-        defaultCoords: MAP_DEFAULT_COORDS,
+        services: enhancedServices,
         shareButton: getShareButtonStrings(dynamicContent),
         serviceTypes,
         providers,
-        populations,
-        accessibility,
         showDirectus: true,
         currentLocale,
+        regions,
+        cities,
       },
       categories,
       aboutUsTextHtml,
@@ -251,5 +305,3 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
     revalidate: REVALIDATION_TIMEOUT_SECONDS,
   };
 };
-
-export default Home;

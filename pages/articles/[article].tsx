@@ -11,11 +11,13 @@ import Footer from '@ircsignpost/signpost-base/dist/src/footer';
 import { MenuOverlayItem } from '@ircsignpost/signpost-base/dist/src/menu-overlay';
 import { createDefaultSearchBarProps } from '@ircsignpost/signpost-base/dist/src/search-bar';
 import {
+  Attachment,
   CategoryWithSections,
   ZendeskCategory,
   getCategoriesWithSections,
 } from '@ircsignpost/signpost-base/dist/src/zendesk';
 import {
+  fetchArticleAttachments,
   getArticle,
   getArticles,
   getCategories,
@@ -70,6 +72,7 @@ interface ArticleProps {
   pageUnderConstruction?: boolean;
   preview: boolean;
   strings: ArticlePageStrings;
+  attachments?: Attachment[];
   // A list of |MenuOverlayItem|s to be displayed in the header and side menu.
   menuOverlayItems: MenuOverlayItem[];
   footerLinks?: MenuOverlayItem[];
@@ -87,6 +90,7 @@ export default function Article({
   pageUnderConstruction,
   preview,
   strings,
+  attachments,
   menuOverlayItems,
   footerLinks,
 }: ArticleProps) {
@@ -147,6 +151,7 @@ export default function Article({
           },
           strings: strings.articleContentStrings,
           previosURL: breadcrumbs,
+          attachments,
         }}
       />
     </ArticlePage>
@@ -160,13 +165,17 @@ async function getStaticParams() {
     )
   );
 
-  return articles.flat().map((article) => {
-    return {
-      article: article.id.toString(),
-      locale: article.locale,
-    };
-  });
+  return articles
+    .flat()
+    .filter((x) => x?.author_id !== 423757401494)
+    .map((article) => {
+      return {
+        article: article.id.toString(),
+        locale: article.locale,
+      };
+    });
 }
+
 export async function getStaticPaths() {
   const articleParams = await getStaticParams();
 
@@ -195,6 +204,8 @@ export const getStaticProps: GetStaticProps = async ({
   locale,
   preview,
 }) => {
+  const articleId = Number(params?.article);
+
   const currentLocale = getLocaleFromCode(locale ?? '');
   let dynamicContent = await getTranslationsFromDynamicContent(
     getZendeskLocaleId(currentLocale),
@@ -238,8 +249,7 @@ export const getStaticProps: GetStaticProps = async ({
 
   const menuOverlayItems = getMenuItems(
     populateMenuOverlayStrings(dynamicContent),
-    menuCategories,
-    false
+    menuCategories
   );
 
   const footerLinks = getFooterItems(
@@ -258,6 +268,12 @@ export const getStaticProps: GetStaticProps = async ({
     preview ?? false
   );
 
+  const attachments = await fetchArticleAttachments(articleId, getZendeskUrl());
+
+  const articleWithAttachments = {
+    ...article,
+    attachments,
+  };
   // If article does not exist, return an error.
   if (!article) {
     const errorProps = await getErrorResponseProps(
@@ -304,6 +320,7 @@ export const getStaticProps: GetStaticProps = async ({
       articleTitle: article.title,
       articleId: article.id,
       articleContent: content,
+      attachments: articleWithAttachments.attachments,
       metaTagAttributes,
       siteUrl: getSiteUrl(),
       lastEditedValue: article.edited_at,
