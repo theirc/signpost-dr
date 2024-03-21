@@ -35,7 +35,9 @@ export default function LocaleSelectPage() {
   return (
     <LocaleSelectPageBase
       siteTitle={SITE_TITLE}
-      message={'Please choose your preferred language'}
+      message={
+        'Por favor, elige tu idioma preferido! Tanpri, chwazi lang ou prefere a!'
+      }
       langs={langs}
       image={<Image src={logo} alt="icon" />}
     />
