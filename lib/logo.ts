@@ -1,7 +1,7 @@
 import type { LogoProps } from '@ircsignpost/signpost-base/dist/src/header';
 import type { Locale } from '@ircsignpost/signpost-base/dist/src/locale';
 
-import logo from '../public/info_boca.png';
+import logo from '../public/DR_logo_white.png';
 
 export const getHeaderLogoProps = (currentLocale: Locale): LogoProps => {
   let imgSrc: string;

@@ -7,7 +7,7 @@ import type { Lang } from '@ircsignpost/signpost-base/dist/src/locale-select-pag
 import Image from 'next/image';
 
 import { SITE_TITLE } from '../lib/constants';
-import logo from '../public/info_boca.png';
+import logo from '../public/DR_logo_white.png';
 
 const langs: Lang[] = [
   {
