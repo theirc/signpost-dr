@@ -29,6 +29,12 @@ export const CATEGORY_ICON_NAMES: { [key: string]: string } = {
 export const SECTION_ICON_NAMES: { [key: string]: string } = {
   /* TODO */
   '123': 'home_work', // Placeholder
+  '17609370390941': 'school', //education
+  '17609328919197': 'shield', //protection
+  '17609229908381': 'document', //documents
+  '17609200930589': 'favorite', //travel
+  '17609070559133': 'work', //financial ass
+  '17608964114333': 'heart', //health
 };
 
 // A list of category IDs that the site should not display.
