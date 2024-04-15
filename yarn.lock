@@ -801,10 +801,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@ircsignpost/signpost-base@16.33.0":
-  version "16.33.0"
-  resolved "https://registry.yarnpkg.com/@ircsignpost/signpost-base/-/signpost-base-16.33.0.tgz#a9f8a3d2f3b91343550f3951cc6997a51d90b855"
-  integrity sha512-N8twh+KeaNGIiAEci3+xs6p6YN+J2Br6b3zf8rMe3ecuPDu38KL513vs/BSQdldPZ8pjiaWyXUCPxNxo9Y6Qdw==
+"@ircsignpost/signpost-base@16.42.0":
+  version "16.42.0"
+  resolved "https://registry.yarnpkg.com/@ircsignpost/signpost-base/-/signpost-base-16.42.0.tgz#ae3142597a0766afa42ba0075d056fecd9df9cf8"
+  integrity sha512-aBRQ8Rfw78HlsxpEuTY9JyYFUYn4mYe+24qQlMBMmgtf4AM8kIH9CBAwbF4joHdKxJynS1Plqz6zNM/IT8NXfQ==
 
 "@jridgewell/gen-mapping@^0.1.0":
   version "0.1.1"
@@ -5776,10 +5776,10 @@ react-dom@18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
-react-icons@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-5.0.1.tgz#1694e11bfa2a2888cab47dcc30154ce90485feee"
-  integrity sha512-WqLZJ4bLzlhmsvme6iFdgO8gfZP17rfjYEJ2m9RsZjZ+cc4k1hTzknEz63YS1MeT50kVzoa1Nz36f4BEx+Wigw==
+react-icons@^5.2.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-5.2.1.tgz#28c2040917b2a2eda639b0f797bff1888e018e4a"
+  integrity sha512-zdbW5GstTzXaVKvGSyTaBalt7HSfuK5ovrzlpyiWHAFXndXTdd/1hdDHI4xBM1Mn7YriT6aqESucFl9kEXzrdw==
 
 react-instantsearch-hooks-web@^6.32.0:
   version "6.33.0"
