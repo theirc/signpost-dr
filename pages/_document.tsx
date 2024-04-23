@@ -4,6 +4,9 @@ function Document() {
   return (
     <Html>
       <Head>
+        <meta property="og:title" content="Info Boca Bouch" />
+        <meta property="og:description" content="Info Boca Bouch Website" />
+        <meta property="og:image" content="https://.info/api/og-image" />
         <script
           src="https://kit.fontawesome.com/027db3ea3f.js"
           crossOrigin="anonymous"

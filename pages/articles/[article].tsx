@@ -11,8 +11,17 @@ import Footer from '@ircsignpost/signpost-base/dist/src/footer';
 import { MenuOverlayItem } from '@ircsignpost/signpost-base/dist/src/menu-overlay';
 import { createDefaultSearchBarProps } from '@ircsignpost/signpost-base/dist/src/search-bar';
 import {
+  Attachment,
   CategoryWithSections,
   ZendeskCategory,
+  getCategoriesWithSections,
+} from '@ircsignpost/signpost-base/dist/src/zendesk';
+import {
+  fetchArticleAttachments,
+  getArticle,
+  getArticles,
+  getCategories,
+  getTranslationsFromDynamicContent,
 } from '@ircsignpost/signpost-base/dist/src/zendesk';
 import { GetStaticProps } from 'next';
 import getConfig from 'next/config';
@@ -25,6 +34,7 @@ import {
   CATEGORIES_TO_HIDE,
   CATEGORY_ICON_NAMES,
   GOOGLE_ANALYTICS_IDS,
+  MENU_CATEGORIES_TO_HIDE,
   REVALIDATION_TIMEOUT_SECONDS,
   SEARCH_BAR_INDEX,
   SECTION_ICON_NAMES,
@@ -49,14 +59,6 @@ import {
   populateMenuOverlayStrings,
 } from '../../lib/translations';
 import { getSiteUrl, getZendeskMappedUrl, getZendeskUrl } from '../../lib/url';
-// TODO Use real Zendesk API implemetation.
-import {
-  getArticle,
-  getArticles,
-  getCategories,
-  getCategoriesWithSections,
-  getTranslationsFromDynamicContent,
-} from '../../lib/zendesk-fake';
 
 interface ArticleProps {
   pageTitle: string;
@@ -70,6 +72,7 @@ interface ArticleProps {
   pageUnderConstruction?: boolean;
   preview: boolean;
   strings: ArticlePageStrings;
+  attachments?: Attachment[];
   // A list of |MenuOverlayItem|s to be displayed in the header and side menu.
   menuOverlayItems: MenuOverlayItem[];
   footerLinks?: MenuOverlayItem[];
@@ -87,6 +90,7 @@ export default function Article({
   pageUnderConstruction,
   preview,
   strings,
+  attachments,
   menuOverlayItems,
   footerLinks,
 }: ArticleProps) {
@@ -147,6 +151,7 @@ export default function Article({
           },
           strings: strings.articleContentStrings,
           previosURL: breadcrumbs,
+          attachments,
         }}
       />
     </ArticlePage>
@@ -160,12 +165,15 @@ async function getStaticParams() {
     )
   );
 
-  return articles.flat().map((article) => {
-    return {
-      article: article.id.toString(),
-      locale: article.locale,
-    };
-  });
+  return articles
+    .flat()
+    .filter((x) => x?.author_id !== 423757401494)
+    .map((article) => {
+      return {
+        article: article.id.toString(),
+        locale: article.locale,
+      };
+    });
 }
 
 export async function getStaticPaths() {
@@ -196,6 +204,8 @@ export const getStaticProps: GetStaticProps = async ({
   locale,
   preview,
 }) => {
+  const articleId = Number(params?.article);
+
   const currentLocale = getLocaleFromCode(locale ?? '');
   let dynamicContent = await getTranslationsFromDynamicContent(
     getZendeskLocaleId(currentLocale),
@@ -208,6 +218,7 @@ export const getStaticProps: GetStaticProps = async ({
   );
 
   let categories: ZendeskCategory[] | CategoryWithSections[];
+  let menuCategories: ZendeskCategory[] | CategoryWithSections[];
   if (USE_CAT_SEC_ART_CONTENT_STRUCTURE) {
     categories = await getCategoriesWithSections(
       currentLocale,
@@ -219,32 +230,34 @@ export const getStaticProps: GetStaticProps = async ({
         (s) => (s.icon = SECTION_ICON_NAMES[s.id] || 'help_outline')
       );
     });
+    menuCategories = await getCategoriesWithSections(
+      currentLocale,
+      getZendeskUrl(),
+      (c) => !MENU_CATEGORIES_TO_HIDE.includes(c.id)
+    );
   } else {
     categories = await getCategories(currentLocale, getZendeskUrl());
     categories = categories.filter((c) => !CATEGORIES_TO_HIDE.includes(c.id));
     categories.forEach(
       (c) => (c.icon = CATEGORY_ICON_NAMES[c.id] || 'help_outline')
     );
+    menuCategories = await getCategories(currentLocale, getZendeskUrl());
+    menuCategories = menuCategories.filter(
+      (c) => !MENU_CATEGORIES_TO_HIDE.includes(c.id)
+    );
   }
-  const aboutUsArticle = await getArticle(
-    currentLocale,
-    ABOUT_US_ARTICLE_ID,
-    getZendeskUrl(),
-    getZendeskMappedUrl(),
-    ZENDESK_AUTH_HEADER
-  );
+
   const menuOverlayItems = getMenuItems(
     populateMenuOverlayStrings(dynamicContent),
-    categories,
-    !!aboutUsArticle
+    menuCategories
   );
-
-  const strings = populateArticlePageStrings(dynamicContent);
 
   const footerLinks = getFooterItems(
     populateMenuOverlayStrings(dynamicContent),
-    categories
+    menuCategories
   );
+
+  const strings = populateArticlePageStrings(dynamicContent);
 
   const article = await getArticle(
     currentLocale,
@@ -255,6 +268,12 @@ export const getStaticProps: GetStaticProps = async ({
     preview ?? false
   );
 
+  const attachments = await fetchArticleAttachments(articleId, getZendeskUrl());
+
+  const articleWithAttachments = {
+    ...article,
+    attachments,
+  };
   // If article does not exist, return an error.
   if (!article) {
     const errorProps = await getErrorResponseProps(
@@ -301,6 +320,7 @@ export const getStaticProps: GetStaticProps = async ({
       articleTitle: article.title,
       articleId: article.id,
       articleContent: content,
+      attachments: articleWithAttachments.attachments,
       metaTagAttributes,
       siteUrl: getSiteUrl(),
       lastEditedValue: article.edited_at,

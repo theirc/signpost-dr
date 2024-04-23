@@ -19,8 +19,13 @@ import { ServiceMapProps } from '@ircsignpost/signpost-base/dist/src/service-map
 import {
   CategoryWithSections,
   ZendeskCategory,
+  getCategoriesWithSections,
 } from '@ircsignpost/signpost-base/dist/src/zendesk';
-import type { NextPage } from 'next';
+import {
+  getArticle,
+  getCategories,
+  getTranslationsFromDynamicContent,
+} from '@ircsignpost/signpost-base/dist/src/zendesk';
 import { GetStaticProps } from 'next';
 import getConfig from 'next/config';
 
@@ -32,6 +37,7 @@ import {
   DIRECTUS_COUNTRY_ID,
   DIRECTUS_INSTANCE,
   GOOGLE_ANALYTICS_IDS,
+  MENU_CATEGORIES_TO_HIDE,
   REVALIDATION_TIMEOUT_SECONDS,
   SEARCH_BAR_INDEX,
   SECTION_ICON_NAMES,
@@ -58,13 +64,6 @@ import {
   populateSocialMediaLinks,
 } from '../lib/translations';
 import { getZendeskMappedUrl, getZendeskUrl } from '../lib/url';
-// TODO Use real Zendesk API implementation.
-import {
-  getArticle,
-  getCategories,
-  getCategoriesWithSections,
-  getTranslationsFromDynamicContent,
-} from '../lib/zendesk-fake';
 
 interface HomeProps {
   currentLocale: Locale;
@@ -80,7 +79,7 @@ interface HomeProps {
   footerLinks?: MenuOverlayItem[];
 }
 
-const Home: NextPage<HomeProps> = ({
+export default function Home({
   currentLocale,
   strings,
   headerBannerStrings,
@@ -90,7 +89,7 @@ const Home: NextPage<HomeProps> = ({
   aboutUsTextHtml,
   categories,
   footerLinks,
-}) => {
+}: HomeProps) {
   const { publicRuntimeConfig } = getConfig();
 
   return (
@@ -119,7 +118,7 @@ const Home: NextPage<HomeProps> = ({
       }
     />
   );
-};
+}
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const currentLocale: Locale = getLocaleFromCode(locale ?? 'en-us');
@@ -133,6 +132,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   );
 
   let categories: ZendeskCategory[] | CategoryWithSections[];
+  let menuCategories: ZendeskCategory[] | CategoryWithSections[];
   if (USE_CAT_SEC_ART_CONTENT_STRUCTURE) {
     categories = await getCategoriesWithSections(
       currentLocale,
@@ -144,33 +144,40 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
         (s) => (s.icon = SECTION_ICON_NAMES[s.id] || 'help_outline')
       );
     });
+    menuCategories = await getCategoriesWithSections(
+      currentLocale,
+      getZendeskUrl(),
+      (c) => !MENU_CATEGORIES_TO_HIDE.includes(c.id)
+    );
   } else {
     categories = await getCategories(currentLocale, getZendeskUrl());
     categories = categories.filter((c) => !CATEGORIES_TO_HIDE.includes(c.id));
     categories.forEach(
       (c) => (c.icon = CATEGORY_ICON_NAMES[c.id] || 'help_outline')
     );
+    menuCategories = await getCategories(currentLocale, getZendeskUrl());
+    menuCategories = menuCategories.filter(
+      (c) => !MENU_CATEGORIES_TO_HIDE.includes(c.id)
+    );
   }
 
-  const aboutUsArticle = await getArticle(
+  const menuOverlayItems = getMenuItems(
+    populateMenuOverlayStrings(dynamicContent),
+    menuCategories
+  );
+  const footerLinks = getFooterItems(
+    populateMenuOverlayStrings(dynamicContent),
+    menuCategories
+  );
+
+  const article = await getArticle(
     currentLocale,
     ABOUT_US_ARTICLE_ID,
     getZendeskUrl(),
     getZendeskMappedUrl(),
     ZENDESK_AUTH_HEADER
   );
-  const aboutUsTextHtml = aboutUsArticle ? aboutUsArticle.body : '';
-
-  const menuOverlayItems = getMenuItems(
-    populateMenuOverlayStrings(dynamicContent),
-    categories,
-    !!aboutUsArticle
-  );
-
-  const footerLinks = getFooterItems(
-    populateMenuOverlayStrings(dynamicContent),
-    categories
-  );
+  const aboutUsTextHtml = article ? article.body : '';
 
   const strings = populateHomePageStrings(dynamicContent);
 
@@ -182,8 +189,28 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
     directus,
     currentLocale.directus
   );
+  const providersArray = await getDirectusProviders(
+    directus,
+    DIRECTUS_COUNTRY_ID
+  );
 
-  services?.sort((a, b) =>
+  const uniqueProvidersIdsSet = new Set(services.flatMap((x) => x.provider.id));
+  const uniqueProvidersIdsArray = Array.from(uniqueProvidersIdsSet);
+
+  const providers = providersArray
+    .filter((x) => uniqueProvidersIdsArray.includes(x.id))
+    .sort((a, b) => a.name?.normalize().localeCompare(b.name?.normalize()));
+
+  const enhancedServices = services.map((service) => {
+    const providerDetails = providers.find(
+      (provider) => provider.id === service.provider.id
+    );
+    return providerDetails
+      ? { ...service, provider: providerDetails }
+      : service;
+  });
+
+  enhancedServices?.sort((a, b) =>
     a.name?.normalize().localeCompare(b.name?.normalize())
   );
 
@@ -207,14 +234,14 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 
   const uniqueCitiesIds = new Set(services.map((service) => service.city));
 
-  const uniqueProvidersIdsSet = new Set(services.flatMap((x) => x.provider.id));
-  const uniqueProvidersIdsArray = Array.from(uniqueProvidersIdsSet);
-
   const regions = await getDirectusRegions(
-    Array.from(uniqueRegionsIds),
+    Array.from(uniqueRegionsIds).filter((x) => x !== null),
     directus
   );
-  const cities = await getDirectusCities(Array.from(uniqueCitiesIds), directus);
+  const cities = await getDirectusCities(
+    Array.from(uniqueCitiesIds).filter((x) => x !== null),
+    directus
+  );
 
   const fetchServiceTypes = await getDirectusServiceCategories(directus);
   const uniqueTypesSet = new Set<number>();
@@ -245,14 +272,6 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       } as DirectusServiceCategory;
     });
 
-  const providersArray = await getDirectusProviders(
-    directus,
-    DIRECTUS_COUNTRY_ID
-  );
-
-  const providers = providersArray
-    .filter((x) => uniqueProvidersIdsArray.includes(x.id))
-    .sort((a, b) => a.name?.normalize().localeCompare(b.name?.normalize()));
   const populations = await getDirectusPopulationsServed(
     uniquePopulationsIdsArray,
     directus
@@ -270,12 +289,10 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       headerBannerStrings: populateHeaderBannerStrings(dynamicContent),
       socialMediaLinks: populateSocialMediaLinks(dynamicContent),
       serviceMapProps: {
-        services,
+        services: enhancedServices,
         shareButton: getShareButtonStrings(dynamicContent),
         serviceTypes,
         providers,
-        populations,
-        accessibility,
         showDirectus: true,
         currentLocale,
         regions,
@@ -288,5 +305,3 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
     revalidate: REVALIDATION_TIMEOUT_SECONDS,
   };
 };
-
-export default Home;
