@@ -428,16 +428,6 @@
     "@babel/helper-validator-identifier" "^7.18.6"
     to-fast-properties "^2.0.0"
 
-"@changey/react-leaflet-markercluster@^4.0.0-rc1":
-  version "4.0.0-rc1"
-  resolved "https://registry.yarnpkg.com/@changey/react-leaflet-markercluster/-/react-leaflet-markercluster-4.0.0-rc1.tgz#88d76c74e9014ca2f669900dded8e2ccdd6dd545"
-  integrity sha512-gS1lEQiQwyeI6Y6Wuxuqqffwywm7giQw4tbcqtJP8zyT5bc3AzW2/EVJGwWORYo/PLDdDnvOrpI+lUJy2UA5MQ==
-  dependencies:
-    "@react-leaflet/core" "^2.0.0"
-    leaflet "^1.8.0"
-    leaflet.markercluster "^1.5.3"
-    react-leaflet "^4.0.0"
-
 "@colors/colors@1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
@@ -1081,11 +1071,6 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@react-leaflet/core@^2.0.0", "@react-leaflet/core@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@react-leaflet/core/-/core-2.1.0.tgz#383acd31259d7c9ae8fb1b02d5e18fe613c2a13d"
-  integrity sha512-Qk7Pfu8BSarKGqILj4x7bCSZ1pjuAPZ+qmRwH5S7mDS91VSbVVsJSrW4qA+GPrro8t69gFYVMWb1Zc4yFmPiVg==
-
 "@react-spring/animated@~9.5.4":
   version "9.5.4"
   resolved "https://registry.yarnpkg.com/@react-spring/animated/-/animated-9.5.4.tgz#4fb2114c5b68243fc451d9af33f5dadd5b3b1c42"
@@ -1292,6 +1277,7 @@
   dependencies:
     "@types/node" "*"
 
+
 "@types/leaflet@^1.8.0":
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.8.0.tgz#dc92d3e868fb6d5067b4b59fa08cd4441f84fabe"
@@ -1353,6 +1339,16 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-map-gl@^6.1.6":
+  version "6.1.6"
+  resolved "https://registry.yarnpkg.com/@types/react-map-gl/-/react-map-gl-6.1.6.tgz#ff6232459763a4e4b5214b9e50ef2d84479e3658"
+  integrity sha512-nrczNIcLmyhj53sYdAGqqAzRJg0lnGUZKdp1YohJfAzM5ialyo2iQxVxo0zpPPXe6oRfxlUTzHMjWGL2wt+EFA==
+  dependencies:
+    "@types/geojson" "*"
+    "@types/mapbox-gl" "*"
+    "@types/react" "*"
+    "@types/viewport-mercator-project" "*"
+
 "@types/react@*":
   version "18.0.20"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.20.tgz#e4c36be3a55eb5b456ecf501bd4a00fd4fd0c9ab"
@@ -1392,6 +1388,20 @@
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.3.tgz#ff5e2f1902969d305225a047c8a0fd5c915cebef"
   integrity sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==
+
+"@types/supercluster@^7.1.3":
+  version "7.1.3"
+  resolved "https://registry.yarnpkg.com/@types/supercluster/-/supercluster-7.1.3.tgz#1a1bc2401b09174d9c9e44124931ec7874a72b27"
+  integrity sha512-Z0pOY34GDFl3Q6hUFYf3HkTwKEE02e7QgtJppBt+beEAxnyOpJua+voGFvxINBHa06GwLFFym7gRPY2SiKIfIA==
+  dependencies:
+    "@types/geojson" "*"
+
+"@types/viewport-mercator-project@*":
+  version "6.1.6"
+  resolved "https://registry.yarnpkg.com/@types/viewport-mercator-project/-/viewport-mercator-project-6.1.6.tgz#74874286099e9506943c3f868c9cbeaf2a6d1559"
+  integrity sha512-uWrbqhRXFeiT6CAvRjf0BkQKRkKED+ofrPhglKpUktQML3463dEPiA4iwe7cZQs6m49Zo/g03rL7ChMLiE5Z8w==
+  dependencies:
+    gl-matrix "^3.2.0"
 
 "@types/yauzl@^2.9.1":
   version "2.10.0"
@@ -3473,7 +3483,7 @@ git-raw-commits@^2.0.0:
     meow "^8.0.0"
     split2 "^3.0.0"
     through2 "^4.0.0"
-
+    
 gl-matrix@^3.4.3:
   version "3.4.3"
   resolved "https://registry.yarnpkg.com/gl-matrix/-/gl-matrix-3.4.3.tgz#fc1191e8320009fd4d20e9339595c6041ddc22c9"
@@ -4235,21 +4245,6 @@ lazy-ass@1.6.0, lazy-ass@^1.6.0:
   resolved "https://registry.yarnpkg.com/lazy-ass/-/lazy-ass-1.6.0.tgz#7999655e8646c17f089fdd187d150d3324d54513"
   integrity sha512-cc8oEVoctTvsFZ/Oje/kGnHbpWHYBe8IAJe4C0QNc3t8uM/0Y8+erSz/7Y1ALuXTEZTMvxXwO6YbX1ey3ujiZw==
 
-leaflet.markercluster@^1.5.3:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/leaflet.markercluster/-/leaflet.markercluster-1.5.3.tgz#9cdb52a4eab92671832e1ef9899669e80efc4056"
-  integrity sha512-vPTw/Bndq7eQHjLBVlWpnGeLa3t+3zGiuM7fJwCkiMFq+nmRuG3RI3f7f4N4TDX7T4NpbAXpR2+NTRSEGfCSeA==
-
-leaflet@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.8.0.tgz#4615db4a22a304e8e692cae9270b983b38a2055e"
-  integrity sha512-gwhMjFCQiYs3x/Sf+d49f10ERXaEFCPr+nVTryhAW8DWbMGqJqt9G4XuIaHmFW08zYvhgdzqXGr8AlW8v8dQkA==
-
-leaflet@^1.9.1:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.9.1.tgz#73c3c31233f5bc69ad3dd681e67860ba28c87291"
-  integrity sha512-5FcDAMTLAuOq0RisQQbTFatl8Sl4bM0gMrBfuHbl7CYbYJv45BfCS8oU3T644MLjleBq1Ncq541QEA1pqUGTFA==
-
 less-loader@^11.0.0:
   version "11.0.0"
   resolved "https://registry.yarnpkg.com/less-loader/-/less-loader-11.0.0.tgz#a31b2bc5cdfb62f1c7de9b2d01cd944c22b1a024"
@@ -4454,7 +4449,7 @@ mapbox-gl@^3.2.0:
     tinyqueue "^2.0.3"
     tweakpane "^4.0.3"
     vt-pbf "^3.1.3"
-
+    
 memoize-one@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-6.0.0.tgz#b2591b871ed82948aee4727dc6abceeeac8c1045"
@@ -5810,12 +5805,13 @@ react-is@^16.12.0, react-is@^16.13.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-leaflet@^4.0.0, react-leaflet@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/react-leaflet/-/react-leaflet-4.1.0.tgz#b53bce23af3bd932c189d7a80bcc7102db85edee"
-  integrity sha512-i+V9pX5lywJ48O2+K3USeeTdYLIhxnLMweH+YLd/UPqVIj3uKzE3Q29bzt83PBtViyZmxDlulzC6uoR3JLiE9A==
+react-map-gl@^7.1.0:
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/react-map-gl/-/react-map-gl-7.1.7.tgz#f9b7d76cccad6d0bf1627d1827a0a378696ac1d0"
+  integrity sha512-mwjc0obkBJOXCcoXQr3VoLqmqwo9vS4bXfbGsdxXzEgVCv/PM0v+1QggL7W0d/ccIy+VCjbXNlGij+PENz6VNg==
   dependencies:
-    "@react-leaflet/core" "^2.1.0"
+    "@maplibre/maplibre-gl-style-spec" "^19.2.1"
+    "@types/mapbox-gl" ">=1.0.0"
 
 react-map-gl@^7.1.7:
   version "7.1.7"
