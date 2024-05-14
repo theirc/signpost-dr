@@ -150,11 +150,11 @@ export function populateSocialMediaLinks(dynamicContent: {
     },
     youtubeLink: {
       title: dynamicContent['default_banner_youtube'],
-      href: dynamicContent['dominican_republic_instagram_link'],
+      href: dynamicContent['dominican_republic_youtube_link'],
     },
      instagramLink: {
       title: dynamicContent['default_banner_instagram_title'],
-      href: dynamicContent['dominican_republic_youtube_link'],
+      href: dynamicContent['dominican_republic_instagram_link'],
     },
   };
 }
