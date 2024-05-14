@@ -5,6 +5,7 @@ import facebookImage from '../public/facebook.svg';
 import messengerImage from '../public/messenger.svg';
 import whatsappImage from '../public/whatsapp.svg';
 import instagramImage from '../public/instagram.svg';
+import youtubeImage from '../public/YouTube.svg';
 
 export interface SocialMediaLink {
   title: string;
@@ -17,6 +18,7 @@ export interface SocialMediaLinks {
   whatsappLink: SocialMediaLink;
   messengerLink: SocialMediaLink;
   instagramLink: SocialMediaLink;
+  youtubeLink: SocialMediaLink;
 }
 
 /**
@@ -40,6 +42,10 @@ export function getSocialMediaProps(
     {
       ...socialMediaLinks.messengerLink,
       image: messengerImage,
+    },
+    {
+      ...socialMediaLinks.youtubeLink,
+      image: youtubeImage,
     },
     {
       ...socialMediaLinks.instagramLink,
