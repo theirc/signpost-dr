@@ -83,7 +83,7 @@ export const HOME_PAGE_DYNAMIC_CONTENT_PLACEHOLDERS = [
   'dominican_republic_whatsapp_link',
   'dominican_republic_messenger_link',
   'dominican_republic_facebook_link',
-  'dominican_republic_instagram_link'
+  'dominican_republic_instagram_link',
   // Main body strings.
   'default_information_title',
   'dominican_republic_information_description',
