@@ -80,8 +80,6 @@ export const HOME_PAGE_DYNAMIC_CONTENT_PLACEHOLDERS = [
   'default_banner_messenger_title',
   'default_banner_whatsapp_title',
   'default_banner_instagram_title',
-  'default_banner_youtube',
-  'dominican_republic_youtube_link',
   'dominican_republic_whatsapp_link',
   'dominican_republic_messenger_link',
   'dominican_republic_facebook_link',
@@ -151,10 +149,6 @@ export function populateSocialMediaLinks(dynamicContent: {
      instagramLink: {
       title: dynamicContent['default_banner_instagram_title'],
       href: dynamicContent['dominican_republic_instagram_link'],
-    },
-     youtubeLink: {
-      title: dynamicContent['default_banner_youtube'],
-      href: dynamicContent['dominican_republic_youtube_link'],
     },
   };
 }
