@@ -26,7 +26,7 @@ function Document() {
         TODO: get API Key from your Product manager, update src and uncomment the script.
         <script
           id="ze-snippet"
-          src="https://static.zdassets.com/ekr/snippet.js?key=37922dda-c8d9-441f-9a01-449297f3bb32"
+          src="https://static.zdassets.com/ekr/snippet.js?key=01a21a5b-910a-40bc-8eca-002aee9821ba"
           async> </script>*/}
       </Head>
       <body>
